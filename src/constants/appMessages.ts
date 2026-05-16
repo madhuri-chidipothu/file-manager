@@ -1,0 +1,8 @@
+export const SENT_OTP_SUCCESSFULLY = "OTP sent successfully";
+export const INVALID_OTP = "Invalid or expired OTP";
+export const NAME_REQUIRED = "Name is required for new accounts";
+export const USER_LOGIN = "Logged in successfully";
+export const USER_NOT_FOUND = "User not found";
+export const LOGGED_OUT = "Logged out successfully";
+export const TOKEN_REFRESHED = "Token refreshed successfully";
+export const USER_DETAILS = "User details fetched successfully";

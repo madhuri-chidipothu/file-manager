@@ -1,0 +1,9 @@
+export const OK = "OK";
+export const CREATED = "Created";
+export const BAD_REQUEST = "Bad Request";
+export const UNAUTHORIZED = "Unauthorized";
+export const FORBIDDEN = "Forbidden";
+export const NOT_FOUND = "Not Found";
+export const CONFLICT = "Conflict";
+export const UNPROCESSABLE_ENTITY = "Unprocessable Entity";
+export const INTERNAL_SERVER_ERROR = "Internal Server Error";
