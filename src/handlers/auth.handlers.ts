@@ -35,17 +35,17 @@ import UnAuthorizedException from "../exceptions/unAuthorizedException";
 export class AuthHandlers {
   sendOtp = factory.createHandlers(async (c) => {
     const reqData = await c.req.json();
-    const { email } = validateRequestBody(sendOtpSchema, reqData);
+    const { newEmail } = validateRequestBody(sendOtpSchema, reqData);
 
-    let user = await getSingleRecordByAColumnValue(users, "email", "=", email);
+    let user = await getSingleRecordByAColumnValue(users, "email", "=", newEmail);
     let is_new_user = false;
 
     if (!user) {
-      user = await saveRecord(users, { email });
+      user = await saveRecord(users, { email: newEmail });
       is_new_user = true;
     }
 
-    const otpData = prepareOTPData(email);
+    const otpData = prepareOTPData(newEmail);
     await createOTP(otpData);
     // await sendOtpEmail(email, user.name ?? null, otpData.otp); // TODO: enable when BREVO_API_KEY is set
 
@@ -57,17 +57,18 @@ export class AuthHandlers {
     const { email, otp, name } = validateRequestBody(verifyOtpSchema, reqData);
 
     const user = await getSingleRecordByAColumnValue(users, "email", "=", email);
-    if (!user) throw new NotFoundException();
+    if (!user) throw new NotFoundException("User not found");
 
     const otpRecord = await fetchOtp(email);
     if (!otpRecord) throw new BadRequestException(INVALID_OTP);
     if (otp !== otpRecord.otp) throw new BadRequestException(INVALID_OTP);
     if (otpRecord.expiresAt < new Date()) throw new BadRequestException(INVALID_OTP);
 
+    if (!user.isVerified && !name) throw new BadRequestException(NAME_REQUIRED);
+
     await deleteRecordById(otps, otpRecord.id);
 
     if (!user.isVerified) {
-      if (!name) throw new BadRequestException(NAME_REQUIRED);
       await updateRecordById(users, user.id, { name, isVerified: true, updatedAt: new Date() });
     }
 
