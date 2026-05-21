@@ -15,6 +15,20 @@
       "when": 1778848542267,
       "tag": "0001_chemical_husk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779380472322,
+      "tag": "0002_lame_vision",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779383405451,
+      "tag": "0003_add_firstname_lastname",
+      "breakpoints": true
     }
   ]
 }

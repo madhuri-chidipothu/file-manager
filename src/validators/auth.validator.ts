@@ -6,8 +6,9 @@ export const sendOtpSchema = z.object({
 
 export const verifyOtpSchema = z.object({
   email: z.string().email(),
-  otp: z.string().length(4).regex(/^\d{4}$/),
-  name: z.string().min(1).max(255).optional(),
+  otp: z.string().length(6).regex(/^\d{6}$/),
+  firstName: z.string().min(1).max(255).optional(),
+  lastName: z.string().min(1).max(255).optional(),
 });
 
 export const refreshSchema = z.object({
@@ -16,4 +17,9 @@ export const refreshSchema = z.object({
 
 export const logoutSchema = z.object({
   refresh_token: z.string().min(1),
+});
+
+export const updateProfileSchema = z.object({
+  firstName: z.string().min(1).max(255),
+  lastName: z.string().min(1).max(255),
 });

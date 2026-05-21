@@ -9,5 +9,6 @@ auth.post("/verify-otp", ...handlers.verifyOtp);
 auth.post("/refresh", ...handlers.refresh);
 auth.post("/logout", ...handlers.logout);
 auth.get("/me", ...handlers.me);
+auth.put("/profile", ...handlers.updateProfile);
 
 export default auth;
