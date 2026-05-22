@@ -5,7 +5,7 @@ import { users, otps, tokens } from "../db/schema/index";
 import { validateRequestBody } from "../helpers/validationHelpers";
 import { prepareOTPData } from "../helpers/otpHelpers";
 import { sendOtpEmail } from "../helpers/brevo.helper";
-import { createOTP, fetchOtp } from "../services/otpServices";
+import { createOTP, fetchOtp, markOtpAsUsed } from "../services/otpServices";
 import {
   saveRecord,
   getSingleRecordByAColumnValue,
@@ -17,7 +17,7 @@ import {
 import { genJWTTokensForUser, verifyRefreshJwt } from "../utils/jwtUtils";
 import { sendResponse } from "../utils/sendResponse";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { sendOtpSchema, verifyOtpSchema, refreshSchema } from "../validators/auth.validator";
+import { sendOtpSchema, verifyOtpSchema, refreshSchema, updateProfileSchema } from "../validators/auth.validator";
 import { OK } from "../constants/httpStatusCodes";
 import {
   SENT_OTP_SUCCESSFULLY,
@@ -47,29 +47,42 @@ export class AuthHandlers {
 
     const otpData = prepareOTPData(newEmail);
     await createOTP(otpData);
-    // await sendOtpEmail(email, user.name ?? null, otpData.otp); // TODO: enable when BREVO_API_KEY is set
+    if (process.env.BREVO_API_KEY && process.env.BREVO_FROM_EMAIL) {
+      await sendOtpEmail(newEmail, user.name ?? null, otpData.otp);
+    } else {
+      console.log(`[DEV] OTP for ${newEmail}: ${otpData.otp}`);
+    }
 
-    return sendResponse(c, OK, SENT_OTP_SUCCESSFULLY, { is_new_user });
+    return sendResponse(c, OK, SENT_OTP_SUCCESSFULLY, { is_new_user, needs_name: !user.isVerified });
   });
 
   verifyOtp = factory.createHandlers(async (c) => {
     const reqData = await c.req.json();
-    const { email, otp, name } = validateRequestBody(verifyOtpSchema, reqData);
+    const { email, otp, firstName, lastName } = validateRequestBody(verifyOtpSchema, reqData);
 
     const user = await getSingleRecordByAColumnValue(users, "email", "=", email);
     if (!user) throw new NotFoundException("User not found");
 
     const otpRecord = await fetchOtp(email);
     if (!otpRecord) throw new BadRequestException(INVALID_OTP);
-    if (otp !== otpRecord.otp) throw new BadRequestException(INVALID_OTP);
+    if (otpRecord.isUsed) throw new BadRequestException(INVALID_OTP);
     if (otpRecord.expiresAt < new Date()) throw new BadRequestException(INVALID_OTP);
+    if (otp !== otpRecord.otp) throw new BadRequestException(INVALID_OTP);
 
-    if (!user.isVerified && !name) throw new BadRequestException(NAME_REQUIRED);
+    if (!user.isVerified && (!firstName || !lastName)) throw new BadRequestException(NAME_REQUIRED);
 
+    // Mark as used first — prevents reuse even if the subsequent delete fails
+    await markOtpAsUsed(otpRecord.id);
     await deleteRecordById(otps, otpRecord.id);
 
     if (!user.isVerified) {
-      await updateRecordById(users, user.id, { name, isVerified: true, updatedAt: new Date() });
+      await updateRecordById(users, user.id, {
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
+        isVerified: true,
+        updatedAt: new Date(),
+      });
     }
 
     const { access_token, refresh_token } = await genJWTTokensForUser(user.id);
@@ -113,5 +126,21 @@ export class AuthHandlers {
   me = factory.createHandlers(authMiddleware, async (c) => {
     const user = c.get("user_payload");
     return sendResponse(c, OK, USER_DETAILS, user);
+  });
+
+  updateProfile = factory.createHandlers(authMiddleware, async (c) => {
+    const user = c.get("user_payload");
+    const reqData = await c.req.json();
+    const { firstName, lastName } = validateRequestBody(updateProfileSchema, reqData);
+
+    await updateRecordById(users, user.id, {
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`,
+      updatedAt: new Date(),
+    });
+
+    const updated = await getRecordByPrimaryKey(users, user.id);
+    return sendResponse(c, OK, USER_DETAILS, updated);
   });
 }
