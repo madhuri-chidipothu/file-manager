@@ -11,7 +11,11 @@ app.use(
   "*",
   cors({
     origin: (origin) =>
-      !origin || origin.startsWith("http://localhost:") ? origin : undefined,
+      !origin ||
+      origin.startsWith("http://localhost:") ||
+      origin === "https://navigator-ui-kappa.vercel.app"
+        ? origin
+        : undefined,
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
