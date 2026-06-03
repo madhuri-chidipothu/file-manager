@@ -6,3 +6,5 @@ export const USER_NOT_FOUND = "User not found";
 export const LOGGED_OUT = "Logged out successfully";
 export const TOKEN_REFRESHED = "Token refreshed successfully";
 export const USER_DETAILS = "User details fetched successfully";
+export const PRESIGNED_URL_GENERATED = "Presigned URL generated";
+export const FILE_UPLOADED = "File uploaded successfully";
