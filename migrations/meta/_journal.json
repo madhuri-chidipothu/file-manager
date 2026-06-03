@@ -29,6 +29,13 @@
       "when": 1779383405451,
       "tag": "0003_add_firstname_lastname",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1780323722107,
+      "tag": "0004_wonderful_jack_murdock",
+      "breakpoints": true
     }
   ]
 }

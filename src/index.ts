@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { onError } from "./utils/onError";
 import auth from "./routes/auth.routes";
+import filesRouter from "./routes/files.routes";
 
 const app = new Hono();
 
@@ -24,6 +25,7 @@ app.use(
 
 app.get("/", (c) => c.json({ message: "Hello Hono" }));
 app.route("/users", auth);
+app.route("/files", filesRouter);
 
 app.onError(onError);
 
