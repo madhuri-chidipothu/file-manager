@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { onError } from "./utils/onError";
 import auth from "./routes/auth.routes";
 import filesRouter from "./routes/files.routes";
+import foldersRouter from "./routes/folders.routes";
 
 const app = new Hono();
 
@@ -17,7 +18,7 @@ app.use(
       origin === "https://navigator-ui-kappa.vercel.app"
         ? origin
         : undefined,
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -26,6 +27,7 @@ app.use(
 app.get("/", (c) => c.json({ message: "Hello Hono" }));
 app.route("/users", auth);
 app.route("/files", filesRouter);
+app.route("/folders", foldersRouter);
 
 app.onError(onError);
 
