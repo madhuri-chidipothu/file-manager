@@ -8,3 +8,23 @@ export const TOKEN_REFRESHED = "Token refreshed successfully";
 export const USER_DETAILS = "User details fetched successfully";
 export const PRESIGNED_URL_GENERATED = "Presigned URL generated";
 export const FILE_UPLOADED = "File uploaded successfully";
+export const FILES_FETCHED = "Files fetched successfully";
+export const FILE_FETCHED = "File fetched successfully";
+export const FILE_STARRED = "File added to favorites";
+export const FILE_UNSTARRED = "File removed from favorites";
+export const FILE_DOWNLOAD_URL = "Download URL generated";
+export const FILE_DELETED = "File deleted successfully";
+export const FILE_MOVED = "File moved successfully";
+export const FILE_COPIED = "File copied successfully";
+
+export const MULTIPART_INITIATED = "Multipart upload initiated";
+export const MULTIPART_COMPLETED = "Multipart upload completed";
+export const MULTIPART_ABORTED = "Multipart upload aborted";
+
+export const FOLDER_CREATED = "Folder created successfully";
+export const FOLDERS_FETCHED = "Folders fetched successfully";
+export const FOLDER_FETCHED = "Folder fetched successfully";
+export const FOLDER_UPDATED = "Folder updated successfully";
+export const FOLDER_DELETED = "Folder deleted successfully";
+export const FOLDER_STARRED = "Folder added to favorites";
+export const FOLDER_UNSTARRED = "Folder removed from favorites";

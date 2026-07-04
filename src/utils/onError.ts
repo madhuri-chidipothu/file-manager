@@ -7,5 +7,6 @@ export const onError = (err: Error, c: Context) => {
     return c.json({ success: false, message: err.message, errors: err.errData ?? null }, err.status as ContentfulStatusCode);
   }
   console.error(err);
-  return c.json({ success: false, message: "Internal server error", errors: null }, 500);
+  const isDev = process.env.NODE_ENV === "development";
+  return c.json({ success: false, message: isDev ? err.message : "Internal server error", errors: isDev ? err.stack : null }, 500);
 };
