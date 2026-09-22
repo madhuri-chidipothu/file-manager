@@ -15,7 +15,7 @@ app.use(
     origin: (origin) =>
       !origin ||
       origin.startsWith("http://localhost:") ||
-      origin === "https://navigator-ui-kappa.vercel.app"
+      origin === "https://cabinet-file-manager.vercel.app"
         ? origin
         : undefined,
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
